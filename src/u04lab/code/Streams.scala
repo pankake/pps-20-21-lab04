@@ -30,7 +30,7 @@ object Streams extends App {
 
     def filter[A](stream: Stream[A])(pred: A => Boolean): Stream[A] = stream match {
       case Cons(head, tail) if (pred(head())) => cons(head(), filter(tail())(pred))
-      case Cons(head, tail) => filter(tail())(pred)
+      case Cons(_, tail) => filter(tail())(pred)
       case _ => Empty()
     }
 
@@ -58,6 +58,11 @@ object Streams extends App {
 
     def generate[A](next: => A): Stream[A] = cons(next, generate(next))
 
+    def fromList[A](list: List[A]): Stream[A] = list match {
+      case List.Cons(head, tail) => cons(head, fromList(tail))
+      case _ => Empty()
+    }
+
   }
 
   import Stream._
@@ -76,9 +81,7 @@ object Streams extends App {
   str = Stream.filter(str)(x => (x < 3 || x > 20)) // {1,2,21,22,..}
   str = Stream.take(str)(10) // {1,2,21,22,..,28}
   println(Stream.toList(str)) // [1,2,21,22,..,28]
-
   val corec: Stream[Int] = Stream.cons(1, corec) // {1,1,1,..}
   println(Stream.toList(Stream.take(corec)(10))) // [1,1,..,1]
-
 */
 }
